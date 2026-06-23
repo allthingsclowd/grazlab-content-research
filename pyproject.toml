@@ -1,0 +1,49 @@
+[project]
+name = "grazlab-content-research"
+version = "0.1.0"
+description = "Shared deterministic content-research engine — crawl → OKF → relevance-loop → per-item generate, reused by craicgpt.ie / thegeekwiththepeak.com / thescriptingpaddy.com"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.43.28",
+    "deepagents>=0.6.8",
+    "langchain-core>=1.4.6",
+    "langchain-openai>=1.3.0",
+    "requests>=2.34.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["grazlab_content_research"]
+
+[dependency-groups]
+dev = [
+    "boto3-stubs>=1.43.28",
+    "mypy>=2.1.0",
+    "pre-commit>=4.6.0",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.17",
+    "types-requests>=2.33.0.20260518",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Test fixtures legitimately carry long inline strings (realistic feed/article text).
+"tests/**" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
