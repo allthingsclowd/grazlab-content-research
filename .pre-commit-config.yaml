@@ -1,3 +1,15 @@
+# Local hooks — the gate that used to run in GitHub Actions.
+#
+# GitHub Actions became a cost constraint, so `.github/workflows/ci.yml` is deleted and
+# `make ci` is THE bar for every PR. `make bootstrap` installs both stages below
+# (`pre-commit install --hook-type pre-commit --hook-type pre-push`).
+#
+# Two stages, cheapest first:
+#   * commit  — ruff lint + format and mypy, as before.
+#   * push    — the full `make pre-push` (uv sync --locked, then make ci). This is the real
+#               gate, and it mirrors what the retired ci.yml ran.
+# Hooks without their own `stages` stay commit-only, so ruff --fix never rewrites files mid-push.
+default_stages: [pre-commit]
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.17
@@ -13,3 +25,10 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      - id: make-pre-push
+        name: make pre-push (uv sync --locked, make ci)
+        entry: make pre-push
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

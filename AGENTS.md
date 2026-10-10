@@ -55,9 +55,18 @@ desk. Live desks: `craicgpt-ai`, `craicgpt-fun`, `geek-cyber`, `paddy-diary-news
 ## Commands
 
 ```bash
-make bootstrap   # uv sync + pre-commit install
+make bootstrap   # uv sync + install the pre-commit and pre-push hooks
 make lint        # ruff check + ruff format --check
 make typecheck   # mypy
 make test        # pytest
-make ci          # all of the above; what CI runs
+make ci          # all of the above; THE bar for every PR (no GitHub CI)
+make pre-push    # uv sync --locked + make ci — what the pre-push hook runs
 ```
+
+- **The gate is local, not GitHub.** GitHub Actions became a cost constraint, so
+  `.github/workflows/ci.yml` is deleted and **`make ci`** — ruff + mypy + pytest — is
+  THE bar for every PR, run by the authoring agent. What the workflow did beyond a bare
+  `make ci` (a locked `uv sync --all-extras --dev`, so lockfile drift fails) lives in
+  **`make pre-push`**, wired to `git push` by the `.pre-commit-config.yaml` pre-push hook
+  `make bootstrap` installs. Paste the gate's result line in the PR body. GitHub stays
+  the remote copy: push branches, open PRs, never delete history.

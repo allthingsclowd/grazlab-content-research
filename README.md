@@ -7,7 +7,7 @@
 **A shared, deterministic content-research engine.**
 *Crawl → ground → randomise → relevance-loop (stop at the threshold) → generate one item at a time.*
 
-[![CI](https://github.com/allthingsclowd/grazlab-content-research/actions/workflows/ci.yml/badge.svg)](https://github.com/allthingsclowd/grazlab-content-research/actions/workflows/ci.yml)
+![gate](https://img.shields.io/badge/gate-local%20make%20pre--push-informational)
 ![python](https://img.shields.io/badge/python-3.12%2B-blue)
 ![tests](https://img.shields.io/badge/tests-63%20passing-brightgreen)
 ![license](https://img.shields.io/badge/license-MIT-green)
@@ -112,12 +112,19 @@ apart, which is exactly how the under-fill bug slipped into one and not the othe
 ## Quickstart
 
 ```bash
-make bootstrap   # uv sync + pre-commit install
+make bootstrap   # uv sync + install the pre-commit and pre-push hooks
 make lint        # ruff check + format --check
 make typecheck   # mypy (the package ships py.typed)
 make test        # pytest  (63 tests, all I/O injected → fully offline)
-make ci          # all of the above
+make ci          # all of the above — the bar for every PR
+make pre-push    # the full local gate: uv sync --locked + make ci
 ```
+
+**The gate is local, not GitHub.** GitHub Actions became a cost constraint, so the CI
+workflow is gone and `make ci` is the bar. The one thing that workflow did beyond a bare
+`make ci` — a locked sync of every extra and dev dependency — lives in `make pre-push`,
+which the pre-push hook `make bootstrap` installs runs on every `git push`
+(`.pre-commit-config.yaml`). GitHub stays the remote copy of the code, branches and PRs.
 
 Add it to your project (PEP 621 / uv):
 
